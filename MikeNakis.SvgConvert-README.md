@@ -70,6 +70,18 @@ Your SVG file may be making use of fonts that happen to be unknown to GDI+, whic
 
 The easiest way to prevent this from happening is to make use of the "convert text to path" command of your SVG editor, so that your SVG file contains no text elements.
 
+## License
+
+Published under the MIT license. Do whatever you want with it.
+
+More information: see [LICENSE.md](LICENSE.md)
+
+## Coding style
+
+This project uses _**my very own™**_ coding style.
+
+More information: see [michael.gr - On Coding Style](https://blog.michael.gr/2018/04/on-coding-style.html)
+
 ---------------
 
 Cover image by [michael.gr](https://blog.michael.gr) including parts of ["convert" by nangicon from the Noun Project](https://thenounproject.com/icon/convert-6481628/) used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
