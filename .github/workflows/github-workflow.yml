@@ -1,0 +1,75 @@
+name: Build
+
+# PEARL: GitHub supplies some retarded default parameters to 'dotnet build' which make the output look completely
+#        different from what it looks when building locally.
+#        For example, the output of "Message" tasks is not shown, even when "Importance" is set to "High". 
+#        The "-ConsoleLoggerParameters:off" magical incantation is necessary to correct this.
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+# PEARL: The VersionPrefix, VersionSuffix mechanism is retarded!
+#        - The version prefix must be exactly three numbers separated by periods. 
+#          If you omit the last number, a zero will be automagically supplied for you.
+#        - Apparently, the entire version number may contain at most one dash, which is automagically supplied when the
+#          version-prefix is concatenated with the version-suffix, so the version suffix itself may not contain a dash. 
+#          If it does, you get: "The package manifest contains an invalid Version: '1.0.0-9-1'"
+#        - To top it all off, the suffix does not actually change the version of the package; instead, it causes nuget 
+#          to treat the version as a pre-release version.  
+#          This is a misapplication of abstraction: the "VersionSuffix" is not some general-purpose suffix for the 
+#          version, it is a "Pre-release version specifier", which happens to be a suffix.
+#          The result of all this is that the whole prefix-suffix mechanism serves a very narrowly scoped purpose and
+#          is entirely useless for any other scenario.
+  RELEASE_VERSION: 2.${{github.run_number}}.${{github.run_attempt}}
+  BUILD_SERVER_BUILD: True
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    # runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.200
+
+    - name: "print stuff"
+      run: |
+       echo github.event.repository.name = ${{github.event.repository.name}}
+       echo env.RELEASE_VERSION = ${{env.RELEASE_VERSION}}
+       echo gitHub.run_number = ${{github.run_number}} gitHub.run_attempt = ${{github.run_attempt}}
+
+    - name: "restore"
+      run: dotnet restore
+
+    - name: "Debug: build"
+      run: dotnet build --configuration Debug --no-restore -ConsoleLoggerParameters:off
+
+# Not needed because there are no tests
+#    - name: "Debug: test"
+#      run: dotnet test --configuration Debug --no-build --verbosity normal
+
+# Not needed because this is an executable, so we only publish the release configuration
+#    - name: "Debug: pack"
+#      run: dotnet pack --configuration Debug --no-build --version-suffix Debug
+
+# Not needed because this is an executable, so we only publish the release configuration
+#    - name: "Debug: push"
+#      run: dotnet nuget push "${{github.event.repository.name}}/bin/Debug/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}}
+
+    - name: "Release: build"
+      run: dotnet build --configuration Release --no-restore -ConsoleLoggerParameters:off
+
+    - name: "Release: pack"
+      run: dotnet pack --configuration Release --no-build
+
+    - name: "Release: push"
+      run: dotnet nuget push "${{github.event.repository.name}}/bin/Release/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}}

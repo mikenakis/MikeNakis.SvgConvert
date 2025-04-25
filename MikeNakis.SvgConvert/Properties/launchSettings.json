@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "MikeNakis.Svg2Ico": {
+      "commandName": "Project",
+      "commandLineArgs": "WowsIntel.ico.svg obj\\WowsIntel.ico --sizes=16,32,48,256",
+      "workingDirectory": "..\\Solution\\WowsIntel"
+    }
+  }
+}

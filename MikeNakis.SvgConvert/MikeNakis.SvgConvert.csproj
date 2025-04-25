@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!-- PEARL: when it comes to editing .csproj files, Visual studio offers an abysmally poor developer experience:
+		- It keeps modifying .csproj files, sometimes messing them up.
+		- It keeps bugging us with warnings saying we better reload the project "or else."
+		- It keeps closing the project file when we reload the project.
+		- It makes it difficult to open the project file if it has been unable to load it.
+		- It keeps reloading project files by itself each time we save them.
+		- With each reload of the project file it loses undo information and it scrolls to the top.
+		To somewhat mitigate all this madness, we put nothing in .csproj files but a single statement which imports
+		another	project file with an extension that is not .csproj, so that:
+		- Visual Studio will leave the other project file alone.
+		- When Visual Studio modifies this file, it is easy to take notice (This file should contain nothing but the
+		  following import task. -->
+	<Import Project="$(MSBuildProjectName).proj.xml" />
+
+</Project>
