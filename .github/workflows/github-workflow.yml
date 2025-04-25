@@ -47,7 +47,7 @@ jobs:
        echo env.RELEASE_VERSION = ${{env.RELEASE_VERSION}}
        echo gitHub.run_number = ${{github.run_number}} gitHub.run_attempt = ${{github.run_attempt}}
 
-    - name: "restore"
+    - name: "dotnet restore"
       run: dotnet restore
 
     - name: "Debug: build"
