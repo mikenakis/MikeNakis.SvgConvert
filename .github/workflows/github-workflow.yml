@@ -50,26 +50,26 @@ jobs:
     - name: "dotnet restore"
       run: dotnet restore
 
-    - name: "Debug: build"
+    - name: "Configuration 'Debug': build"
       run: dotnet build --configuration Debug --no-restore -ConsoleLoggerParameters:off
 
 # Not needed because there are no tests
-#    - name: "Debug: test"
+#    - name: "Configuration 'Debug': test"
 #      run: dotnet test --configuration Debug --no-build --verbosity normal
 
 # Not needed because this is an executable, so we only publish the release configuration
-#    - name: "Debug: pack"
+#    - name: "Configuration 'Debug': pack"
 #      run: dotnet pack --configuration Debug --no-build --version-suffix Debug
 
 # Not needed because this is an executable, so we only publish the release configuration
-#    - name: "Debug: push"
+#    - name: "Configuration 'Debug': push"
 #      run: dotnet nuget push "${{github.event.repository.name}}/bin/Debug/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}}
 
-    - name: "Release: build"
+    - name: "Configuration 'Release': build"
       run: dotnet build --configuration Release --no-restore -ConsoleLoggerParameters:off
 
-    - name: "Release: pack"
+    - name: "Configuration 'Release': pack"
       run: dotnet pack --configuration Release --no-build
 
-    - name: "Release: push"
+    - name: "Configuration 'Release': push"
       run: dotnet nuget push "${{github.event.repository.name}}/bin/Release/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}}
