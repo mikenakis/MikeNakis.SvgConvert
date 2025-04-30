@@ -2,8 +2,11 @@
 
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows</TargetFramework>
+		<Configurations>Debug;Release</Configurations>
 		<OutputType>Exe</OutputType>
 		<!--<ApplicationIcon>$(BaseIntermediateOutputPath)\Svg2Ico.ico</ApplicationIcon>-->
+		<PackagesConfiguration Condition="'$(Configuration)'=='Debug'">Develop</PackagesConfiguration>
+		<PackagesConfiguration Condition="'$(Configuration)'=='Release'">Release</PackagesConfiguration>
 	</PropertyGroup>
 
 	<Import Project="..\AllProjects.proj.xml" />
@@ -21,7 +24,7 @@
 		</When>
 		<Otherwise>
 			<ItemGroup>
-				<PackageReference Include="MikeNakis.Kit-$(Configuration)" Version="2.*" PrivateAssests="All" />
+				<PackageReference Include="MikeNakis.Kit-$(PackagesConfiguration)" Version="2.*" PrivateAssests="All" />
 			</ItemGroup>
 		</Otherwise>
 	</Choose>
@@ -34,7 +37,7 @@
 		</When>
 		<Otherwise>
 			<ItemGroup>
-				<PackageReference Include="MikeNakis.Console-$(Configuration)" Version="2.*" PrivateAssests="All" />
+				<PackageReference Include="MikeNakis.Console-$(PackagesConfiguration)" Version="2.*" PrivateAssests="All" />
 			</ItemGroup>
 		</Otherwise>
 	</Choose>
