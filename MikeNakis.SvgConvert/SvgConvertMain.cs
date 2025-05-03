@@ -1,18 +1,12 @@
 namespace MikeNakis.SvgConvert;
 
-using Sys = System;
-using System.Collections.Generic;
 using MikeNakis.Kit.Collections;
-using SysIo = System.IO;
 using MikeNakis.Console;
 using MikeNakis.Kit.FileSystem;
-using SysDrawing = System.Drawing;
-using SysDrawingImaging = System.Drawing.Imaging;
-using static MikeNakis.Kit.GlobalStatics;
 using MikeNakis.Kit;
-using SysGlob = System.Globalization;
 using MikeNakis.Kit.Extensions;
 using MikeNakis.Clio.Extensions;
+using SysImage = SysDraw.Imaging;
 
 sealed class Svg2IcoMain
 {
@@ -46,8 +40,8 @@ sealed class Svg2IcoMain
 		int width = widthArgument.Value == null ? (int)svgDocument.Bounds.Width : parseInt( widthArgument.Value );
 		int height = heightArgument.Value == null ? (int)svgDocument.Bounds.Height : parseInt( heightArgument.Value );
 		Log.Debug( $"Writing {outputFilePath}" );
-		SysDrawing.Bitmap bitmap = svgDocument.Draw( width, height );
-		bitmap.Save( outputFilePath.Path, SysDrawingImaging.ImageFormat.Png );
+		SysDraw.Bitmap bitmap = svgDocument.Draw( width, height );
+		bitmap.Save( outputFilePath.Path, SysImage.ImageFormat.Png );
 		return;
 
 		static FilePath getPngFilePath( FilePath svgFilePath, string? pngFileArgumentValue )
@@ -85,8 +79,8 @@ sealed class Svg2IcoMain
 		FilePath outputFilePath = getIcoFilePath( inputFilePath, outputFileArgument.Value );
 		Log.Debug( $"Reading {inputFilePath}" );
 		Svg.SvgDocument svgDocument = readSvgDocument( inputFilePath );
-		IReadOnlyList<SysDrawing.Image> images = createImages( svgDocument, iconSizes );
-		SysDrawing.Icon icon = iconFromImages( images );
+		IReadOnlyList<SysDraw.Image> images = createImages( svgDocument, iconSizes );
+		SysDraw.Icon icon = iconFromImages( images );
 		Log.Debug( $"Writing {outputFilePath}" );
 		saveIcon( outputFilePath, icon );
 		return;
@@ -94,24 +88,24 @@ sealed class Svg2IcoMain
 		static FilePath getIcoFilePath( FilePath svgFilePath, string? icoFileArgumentValue )
 			=> getRelatedFilePath( svgFilePath, icoFileArgumentValue, ".ico" );
 
-		static IReadOnlyList<SysDrawing.Image> createImages( Svg.SvgDocument svgDocument, IReadOnlyList<int> iconSizes )
+		static IReadOnlyList<SysDraw.Image> createImages( Svg.SvgDocument svgDocument, IReadOnlyList<int> iconSizes )
 		{
-			MutableList<SysDrawing.Bitmap> bitmaps = new();
+			MutableList<SysDraw.Bitmap> bitmaps = new();
 			foreach( int iconSize in iconSizes )
 			{
-				SysDrawing.Bitmap bitmap = svgDocument.Draw( iconSize, iconSize );
+				SysDraw.Bitmap bitmap = svgDocument.Draw( iconSize, iconSize );
 				bitmaps.Add( bitmap );
 			}
 			return bitmaps.AsReadOnlyList;
 		}
 
-		static void saveIcon( FilePath icoFilePath, SysDrawing.Icon icon )
+		static void saveIcon( FilePath icoFilePath, SysDraw.Icon icon )
 		{
 			using( SysIo.FileStream stream = icoFilePath.NewStream( SysIo.FileMode.Create, SysIo.FileAccess.Write ) )
 				icon.Save( stream );
 		}
 
-		static SysDrawing.Icon iconFromImages( IReadOnlyList<SysDrawing.Image> images )
+		static SysDraw.Icon iconFromImages( IReadOnlyList<SysDraw.Image> images )
 		{
 			// See https://en.wikipedia.org/wiki/ICO_(file_format)
 			const int iconDirStructureSize = 6;
@@ -126,9 +120,9 @@ sealed class Svg2IcoMain
 			int imageDataOffset = iconDirStructureSize + images.Count * iconDirEntryStructureSize;
 			for( int i = 0; i < images.Count; i++ )
 			{
-				SysDrawing.Image image = images[i];
+				SysDraw.Image image = images[i];
 				memoryStreams[i] = new();
-				image.Save( memoryStreams[i], SysDrawingImaging.ImageFormat.Png );
+				image.Save( memoryStreams[i], SysImage.ImageFormat.Png );
 				int imageDataLength = (int)memoryStreams[i].Length;
 				Assert( memoryStream.Length == iconDirStructureSize + i * iconDirEntryStructureSize );
 				writer.Write( (byte)(image.Width >= 256 ? 0 : image.Width) ); // 0 : width of image
@@ -141,10 +135,10 @@ sealed class Svg2IcoMain
 				writer.Write( imageDataOffset ); // 12: offset of image data
 				imageDataOffset += imageDataLength;
 			}
-			foreach( SysDrawing.Image image in images )
-				image.Save( memoryStream, SysDrawingImaging.ImageFormat.Png );
+			foreach( SysDraw.Image image in images )
+				image.Save( memoryStream, SysImage.ImageFormat.Png );
 			memoryStream.Seek( 0, SysIo.SeekOrigin.Begin );
-			return new SysDrawing.Icon( memoryStream );
+			return new SysDraw.Icon( memoryStream );
 		}
 	}
 

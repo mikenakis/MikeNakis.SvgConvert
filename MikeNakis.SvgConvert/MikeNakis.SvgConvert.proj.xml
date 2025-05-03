@@ -53,6 +53,10 @@
 		</Otherwise>
 	</Choose>
 
+	<ItemGroup>
+		<Using Static="True" Include="MikeNakis.Kit.GlobalStatics" />
+	</ItemGroup>
+
 	<!-- NuGet Packaging ******************************************************************************************* -->
 
 	<PropertyGroup>
