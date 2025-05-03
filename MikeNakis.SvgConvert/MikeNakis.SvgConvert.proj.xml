@@ -14,6 +14,8 @@
 		<PackageReference Include="Svg" Version="3.4.7" />
 	</ItemGroup>
 
+	<!-- PEARL: Dotnet does not support swapping between package and project dependencies. The following nonsense is
+	            necessary to work around this limitation. See https://github.com/dotnet/project-system/issues/195 -->
 	<Choose>
 		<When Condition="Exists('..\..\MikeNakis.Kit\MikeNakis.Kit\MikeNakis.Kit.csproj')">
 			<ItemGroup>
@@ -27,6 +29,8 @@
 		</Otherwise>
 	</Choose>
 
+	<!-- PEARL: Dotnet does not support swapping between package and project dependencies. The following nonsense is
+	            necessary to work around this limitation. See https://github.com/dotnet/project-system/issues/195 -->
 	<Choose>
 		<When Condition="Exists('..\..\MikeNakis.Console\MikeNakis.Console\MikeNakis.Console.csproj')">
 			<ItemGroup>
@@ -40,6 +44,8 @@
 		</Otherwise>
 	</Choose>
 
+	<!-- PEARL: Dotnet does not support swapping between package and project dependencies. The following nonsense is
+	            necessary to work around this limitation. See https://github.com/dotnet/project-system/issues/195 -->
 	<Choose>
 		<When Condition="Exists('..\..\MikeNakis.Clio\MikeNakis.Clio\MikeNakis.Clio.csproj')">
 			<ItemGroup>
