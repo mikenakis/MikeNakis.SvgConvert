@@ -33,9 +33,10 @@ The main purpose of MikeNakis.SvgConvert is to allow us to create the icon of ou
     ```xml
 	<Project ...>
 		<PropertyGroup>
-			<ApplicationIcon>$(BaseIntermediateOutputPath)MyApp.ico</ApplicationIcon>
+			<ApplicationIcon>$(BaseIntermediateOutputPath)$(AssemblyName).ico</ApplicationIcon>
 			...
     ```
+
 1. Further down in your project file, add the following code:
     ```
 	 <!-- MikeNakis.SvgConvert boilerplate -->
@@ -45,11 +46,11 @@ The main purpose of MikeNakis.SvgConvert is to allow us to create the icon of ou
 	 </ItemGroup>
 	 <Target Name="SvgConvertTarget" BeforeTargets="BeforeBuild" Inputs="@(SvgConvertInput)" Outputs="@(SvgConvertInput->'$(BaseIntermediateOutputPath)%(Filename)')">
  		<Message Importance="High" Text="MikeNakis.SvgConvert %(SvgConvertInput.FullPath) $(BaseIntermediateOutputPath)%(SvgConvertInput.Filename) ==============================================================================" />
- 		<Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="..\..\MikeNakis.SvgConvert\MikeNakis.SvgConvert\bin\$(Configuration)\net8.0-windows\MikeNakis.SvgConvert.exe windows-ico &quot;%(SvgConvertInput.FullPath)&quot; &quot;$(BaseIntermediateOutputPath)%(SvgConvertInput.Filename)&quot;" />
+ 		<Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="cmd /c MikeNakis.SvgConvert windows-ico &quot;%(SvgConvertInput.FullPath)&quot; &quot;$(BaseIntermediateOutputPath)%(SvgConvertInput.Filename)&quot;" />
 	 </Target>
     ```
 
-Note that you will probably have to modify the `..\..\MikeNakis.SvgConvert\MikeNakis.SvgConvert\bin\$(Configuration)\net8.0-windows\MikeNakis.SvgConvert.exe` part
+Note that you will probably have to modify the `cmd /c MikeNakis.SvgConvert` part
 to point to the location where you have the `MikeNakis.SvgConvert` executable.  Other than that, the MikeNakis.SvgConvert boilerplate code is the same for all of your projects.
 
 That's it. From that moment on, every time you modify an `.ico.svg` file in your project, the corresponding `.ico` file will be automatically generated during build.

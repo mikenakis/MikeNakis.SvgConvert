@@ -12,7 +12,7 @@ sealed class Svg2IcoMain
 {
 	static void Main( string[] arguments )
 	{
-		ConsoleHelpers.Run( true, () => run( arguments ) );
+		ConsoleHelpers.Run( false, () => run( arguments ) );
 	}
 
 	static int run( string[] arguments )
