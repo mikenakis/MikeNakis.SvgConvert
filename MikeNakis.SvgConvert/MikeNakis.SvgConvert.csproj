@@ -64,9 +64,9 @@
 
 	<!-- Temporary post-build step until I get around to packaging this project as a build tool -->
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <ItemGroup>
-            <FilesToCopy Include="$(OutputPath)\**\*.*"/>
-        </ItemGroup>
+		<ItemGroup>
+			<FilesToCopy Include="$(OutputPath)\**\*.*"/>
+		</ItemGroup>
 		<PropertyGroup>
 			<LauncherContent>
 @echo off
@@ -75,42 +75,44 @@
 		</PropertyGroup>
 
 		<Message Importance="High" Text="Post-build step: Copying files to $(USERPROFILE)\bin\$(MSBuildProjectName)..." />
-        <Copy
+		<Copy
             SourceFiles="@(FilesToCopy)"
             DestinationFolder="$(USERPROFILE)\bin\$(MSBuildProjectName)\%(RecursiveDir)" />
 
-       <WriteLinesToFile
-            File="$(USERPROFILE)\bin\$(MSBuildProjectName).bat"
-            Lines="$(LauncherContent)"
-			Overwrite="True"
-            WriteOnlyWhenDifferent="True"
-            Encoding="Windows-1252" />		
+		<WriteLinesToFile
+			 File="$(USERPROFILE)\bin\$(MSBuildProjectName).bat"
+			 Lines="$(LauncherContent)"
+			 Overwrite="True"
+			 WriteOnlyWhenDifferent="True"
+			 Encoding="Windows-1252" />
 	</Target>
 
 	<!-- NuGet Packaging ******************************************************************************************* -->
 
-	<PropertyGroup>
-		<!-- PackageId: the default is $(MSBuildProjectName) -->
-		<!--<PackageId>$(AssemblyName)</PackageId>-->
-		<!-- Get version from environment variable, because it is computed by the build server script. -->
-		<Version>$(RELEASE_VERSION)</Version>
-		<!-- Title: the default appears to be $(MSBuildProjectName) if equal to $(AssemblyName), blank otherwise. -->
-		<Title>$(MSBuildProjectName) ($(Configuration))</Title>
-		<Authors>MikeNakis</Authors>
-		<Description>Converts SVG files to other file formats.</Description>
-		<Copyright>Copyright © Mike Nakis. All rights reserved.</Copyright>
-		<PackageIcon>MikeNakis.SvgConvert-Logo.png</PackageIcon>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<RepositoryUrl>https://github.com/mikenakis/MikeNakis.SvgConvert.git</RepositoryUrl>
-		<PublishRepositoryUrl>True</PublishRepositoryUrl>
-		<PackageTags>dotnet; dotnet-core; utilities; command-line; tools; command-line-tools; svg; png; ico</PackageTags>
-		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<PackageReleaseNotes>initial release</PackageReleaseNotes>
-		<IncludeSymbols Condition="'$(Configuration)' == 'Release'">True</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<!--<PackRelease Condition="'$(Configuration)' == 'Debug'">False</PackRelease>-->
-	</PropertyGroup>
+	<Target Name="PrepareForPack" BeforeTargets="Pack">
+		<PropertyGroup>
+			<!-- PackageId: the default is $(MSBuildProjectName) -->
+			<!--<PackageId>$(AssemblyName)</PackageId>-->
+			<!-- Get version from environment variable, because it is computed by the build server script. -->
+			<Version>$(RELEASE_VERSION)</Version>
+			<!-- Title: the default appears to be $(MSBuildProjectName) if equal to $(AssemblyName), blank otherwise. -->
+			<Title>$(MSBuildProjectName) ($(Configuration))</Title>
+			<Authors>MikeNakis</Authors>
+			<Description>Converts SVG files to other file formats.</Description>
+			<Copyright>Copyright © Mike Nakis. All rights reserved.</Copyright>
+			<PackageIcon>MikeNakis.SvgConvert-Logo.png</PackageIcon>
+			<PackageReadmeFile>README.md</PackageReadmeFile>
+			<RepositoryUrl>https://github.com/mikenakis/MikeNakis.SvgConvert.git</RepositoryUrl>
+			<PublishRepositoryUrl>True</PublishRepositoryUrl>
+			<PackageTags>dotnet; dotnet-core; utilities; command-line; tools; command-line-tools; svg; png; ico</PackageTags>
+			<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+			<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+			<PackageReleaseNotes>initial release</PackageReleaseNotes>
+			<IncludeSymbols Condition="'$(Configuration)' == 'Release'">True</IncludeSymbols>
+			<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+			<!--<PackRelease Condition="'$(Configuration)' == 'Debug'">False</PackRelease>-->
+		</PropertyGroup>
+	</Target>
 
 	<ItemGroup>
 		<None Include="..\LICENSE.md" Pack="True" PackagePath="/" />
@@ -118,5 +120,5 @@
 		<None Include="SvgConvert.ico.svg" Pack="True" PackagePath="/" />
 		<None Include="README-for-nuget.md" Pack="True" PackagePath="/README.md" />
 	</ItemGroup>
-	
+
 </Project>

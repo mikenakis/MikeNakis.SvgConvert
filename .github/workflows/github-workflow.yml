@@ -3,7 +3,9 @@ name: Build
 # PEARL: GitHub supplies some retarded default parameters to 'dotnet build' which make the output look completely
 #        different from what it looks when building locally.
 #        For example, the output of "Message" tasks is not shown, even when "Importance" is set to "High". 
-#        The "-ConsoleLoggerParameters:off" magical incantation is necessary to correct this.
+#        The "-ConsoleLoggerParameters:off" magical incantation corrects this problem.
+# PEARL-ON-PEARL: The "-ConsoleLoggerParameters:off" magical incantation does not work when invoking "dotnet build"
+#        locally. In this case, the "/tl:off" magical incantation is necessary.
 
 on:
   push:
@@ -51,7 +53,7 @@ jobs:
       run: dotnet restore
 
     - name: "Configuration 'Debug': build"
-      run: dotnet build --configuration Debug --no-restore -ConsoleLoggerParameters:off
+      run: dotnet build --configuration Debug --no-restore /tl:off /check
 
 # Not needed because there are no tests
 #    - name: "Configuration 'Debug': test"
@@ -66,7 +68,7 @@ jobs:
 #      run: dotnet nuget push "${{github.event.repository.name}}/bin/Debug/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}}
 
     - name: "Configuration 'Release': build"
-      run: dotnet build --configuration Release --no-restore -ConsoleLoggerParameters:off
+      run: dotnet build --configuration Release --no-restore /tl:off /check
 
     - name: "Configuration 'Release': pack"
       run: dotnet pack --configuration Release --no-build
