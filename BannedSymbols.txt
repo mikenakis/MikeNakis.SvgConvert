@@ -11,7 +11,7 @@
 //    https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/documentation-comments#d42-id-string-format
 
 M:System.Linq.Enumerable.ToArray`1(System.Collections.Generic.IEnumerable{``0}) ; Use `.Collect()` instead.
-T:System.Collections.Generic.List`1 ; Use new MutableList<T>( enumerable ) instead.
+//T:System.Collections.Generic.List`1 ; Use new MutableList<T>( enumerable ) instead.
 M:System.Linq.Enumerable.ToList`1(System.Collections.Generic.IEnumerable{``0}) ; Use `new MutableList()` instead.
 //M:System.Linq.Enumerable.AsEnumerable`1(System.Collections.Generic.IEnumerable{``0}) ; 
 P:System.DateTime.Now ; 

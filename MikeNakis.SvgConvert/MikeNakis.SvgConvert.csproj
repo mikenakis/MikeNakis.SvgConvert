@@ -7,7 +7,7 @@
 	</PropertyGroup>
 
 	<Import Project="..\AllProjects.proj.xml" />
-	<Import Project="..\SymbolBanning.proj.xml" />
+	<Import Project="..\BannedApiAnalyzers.proj.xml" />
 
 	<ItemGroup>
 		<PackageReference Include="Svg" Version="3.4.7" />

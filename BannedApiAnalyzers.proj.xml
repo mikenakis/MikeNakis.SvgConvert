@@ -1,4 +1,3 @@
-<!-- MikeNakis.Commonfiles/SymbolBanning.proj.xml -->
 <Project>
 
 	<Target Name="AssertFileExists" BeforeTargets="BeforeBuild">
