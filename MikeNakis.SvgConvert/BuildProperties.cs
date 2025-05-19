@@ -1,6 +1,5 @@
-#pragma warning disable IDE0001 //Name can be simplified
-#pragma warning disable IDE0055 //Fix formatting
-#pragma warning disable IDE0130 //Namespace does not match folder structure
+#pragma warning disable IDE0001 //Simplify name
+#pragma warning disable IDE0002 //Simplify member access
 namespace MikeNakis.SvgConvert;
 
 static class BuildProperties
