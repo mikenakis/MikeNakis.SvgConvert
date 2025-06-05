@@ -1,17 +1,18 @@
 namespace MikeNakis.SvgConvert;
 
-using MikeNakis.Kit.Collections;
-using MikeNakis.Console;
-using MikeNakis.Kit.FileSystem;
-using MikeNakis.Kit;
-using MikeNakis.Kit.Extensions;
 using MikeNakis.Clio.Extensions;
+using MikeNakis.Console;
+using MikeNakis.Kit;
+using MikeNakis.Kit.Collections;
+using MikeNakis.Kit.Extensions;
+using MikeNakis.Kit.FileSystem;
 using SysImage = SysDraw.Imaging;
 
 sealed class Svg2IcoMain
 {
 	static void Main( string[] arguments )
 	{
+		StartupProjectDirectory.Initialize();
 		ConsoleHelpers.Run( false, () => run( arguments ) );
 	}
 
