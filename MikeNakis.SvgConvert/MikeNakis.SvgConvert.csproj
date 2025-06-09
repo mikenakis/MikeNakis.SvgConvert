@@ -1,9 +1,43 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0-windows</TargetFramework>
+		<!-- PEARL: The pack-as-tool functionality of dotnet arbitrarily requires tools to be cross-platform tools,
+			and they enforce this by disallowing the 'windows' target-framework-moniker (TFM) when packing.
+			So, we have no option but to refrain from using this TFM when packing. -->
+		<TargetFramework Condition="'$(_IsPacking)'=='True'">net9.0</TargetFramework>
+		<TargetFramework Condition="'$(_IsPacking)'!='True'">net9.0-windows</TargetFramework>
+		<!-- PEARL-ON-PEARL: Of course, omitting the -windows TFM causes several instances of warning CA1416 "This call
+			site is reachable on all platforms" to be issued. So, we have no option but to suppress this warning, and
+			let users know that this tool will only work on windows. -->
+		<NoWarn>$(NoWarn);CA1416</NoWarn>
+
 		<Configurations>Debug;Release</Configurations>
 		<OutputType>Exe</OutputType>
+
+		<!-- Packing properties -->
+		<PackAsTool>True</PackAsTool>
+		<!--<ToolCommandName>SvgConvert</ToolCommandName>-->
+		<!--<PackageOutputPath>./nupkg</PackageOutputPath>-->
+			
+		<!--PackageId: the default is $(MSBuildProjectName)--> 
+		<!--<PackageId>$(AssemblyName)</PackageId>-->
+		<!--Title: the default appears to be $(MSBuildProjectName) if equal to $(AssemblyName), blank otherwise.--> 
+		<Title>$(MSBuildProjectName) ($(Configuration))</Title>
+		<Authors>MikeNakis</Authors>
+		<Description>Converts SVG files to other formats. (PNG or ICO.)</Description>
+		<Copyright>Copyright © Mike Nakis. All rights reserved.</Copyright>
+		<PackageIcon>MikeNakis.SvgConvert-Logo.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/mikenakis/MikeNakis.SvgConvert.git</RepositoryUrl>
+		<PublishRepositoryUrl>True</PublishRepositoryUrl>
+		<PackageTags>dotnet; dotnet-core; utilities; command-line; tools; command-line-tools; svg; png; ico</PackageTags>
+		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+ 		<PackageProjectUrl>https://github.com/mikenakis/MikeNakis.SvgConvert</PackageProjectUrl>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<PackageReleaseNotes>initial release</PackageReleaseNotes>
+		<IncludeSymbols Condition="'$(Configuration)' == 'Release'">True</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		
 	</PropertyGroup>
 
 	<Import Project="..\AllProjects.proj.xml" />
@@ -62,56 +96,12 @@
 		</Otherwise>
 	</Choose>
 
-	<!-- Temporary post-build step until I get around to packaging this project as a build tool -->
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<ItemGroup>
-			<FilesToCopy Include="$(OutputPath)\**\*.*"/>
-		</ItemGroup>
-		<PropertyGroup>
-			<LauncherContent>
-@echo off
-%~dp0$(MSBuildProjectName)\$(MSBuildProjectName) %*
-			</LauncherContent>
-		</PropertyGroup>
-
-		<Message Importance="High" Text="Post-build step: Copying files to $(USERPROFILE)\bin\$(MSBuildProjectName)..." />
-		<Copy
-            SourceFiles="@(FilesToCopy)"
-            DestinationFolder="$(USERPROFILE)\bin\$(MSBuildProjectName)\%(RecursiveDir)" />
-
-		<WriteLinesToFile
-			 File="$(USERPROFILE)\bin\$(MSBuildProjectName).bat"
-			 Lines="$(LauncherContent)"
-			 Overwrite="True"
-			 WriteOnlyWhenDifferent="True"
-			 Encoding="Windows-1252" />
-	</Target>
-
 	<!-- NuGet Packaging ******************************************************************************************* -->
 
-	<Target Name="PrepareForPack" BeforeTargets="Pack">
-		<PropertyGroup>
-			<!-- PackageId: the default is $(MSBuildProjectName) -->
-			<!--<PackageId>$(AssemblyName)</PackageId>-->
-			<!-- Get version from environment variable, because it is computed by the build server script. -->
-			<Version>$(RELEASE_VERSION)</Version>
-			<!-- Title: the default appears to be $(MSBuildProjectName) if equal to $(AssemblyName), blank otherwise. -->
-			<Title>$(MSBuildProjectName) ($(Configuration))</Title>
-			<Authors>MikeNakis</Authors>
-			<Description>Converts SVG files to other file formats.</Description>
-			<Copyright>Copyright © Mike Nakis. All rights reserved.</Copyright>
-			<PackageIcon>MikeNakis.SvgConvert-Logo.png</PackageIcon>
-			<PackageReadmeFile>README.md</PackageReadmeFile>
-			<RepositoryUrl>https://github.com/mikenakis/MikeNakis.SvgConvert.git</RepositoryUrl>
-			<PublishRepositoryUrl>True</PublishRepositoryUrl>
-			<PackageTags>dotnet; dotnet-core; utilities; command-line; tools; command-line-tools; svg; png; ico</PackageTags>
-			<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-			<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-			<PackageReleaseNotes>initial release</PackageReleaseNotes>
-			<IncludeSymbols Condition="'$(Configuration)' == 'Release'">True</IncludeSymbols>
-			<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-			<!--<PackRelease Condition="'$(Configuration)' == 'Debug'">False</PackRelease>-->
-		</PropertyGroup>
+	<!-- PEARL: this target is executed after pack, even though we say BeforeTargets="Pack" -->
+	<Target Name="CheckVersion" BeforeTargets="Pack">
+		<Message Importance="High" Text="PackageVersion = '$(PackageVersion)', Version = '$(Version)'" />
+		<Error Condition="'$(PackageVersion)' == '1.0.0'" Text="Version is 1.0.0"/>
 	</Target>
 
 	<ItemGroup>

@@ -1,4 +1,4 @@
-# MikeNakis.SvgConvert<br><sub><sup>Converts SVG files to other file formats.</sub></sup>
+# MikeNakis.SvgConvert<br><sub><sup>Converts SVG files to other file formats. (PNG and ICO.)</sub></sup>
 
 <p align="center">
   <img title="MikeNakis.SvgConvert icon" src="MikeNakis.SvgConvert/SvgConvert.ico.svg" width="256" />
@@ -9,7 +9,7 @@
 MikeNakis.SvgConvert is a command-line tool which can be used to convert an SVG file to other file formats.  Supported formats:
 
 - PNG
-- windows-icon (ICO)
+- ICO (PNG-based Windows Icon)
 
 The generated windows-icon file has multiple resolutions, transparent background, and is PNG-based, (a feature supported by Windows since Vista,) so it can have semi-transparent pixels instead of being limited to pixels that are either fully transparent or fully opaque. In other words, the generated icon looks _perfect_.
 
@@ -24,6 +24,10 @@ The main purpose of MikeNakis.SvgConvert is to allow us to create the icon of ou
 1. SVG files are text files, so each time we modify them our source control system can show us precisely what changes we made.
 1. By incorporating SvgConvert in our build process, the conversion from SVG to ICO takes place only if the SVG file has changed.
 1. Each time the SVG file changes, the corresponding ICO file is automatically generated without the need for manual steps.
+
+## Limitations
+
+Currently, this tool only works on Windows.
 
 ## How to use MikeNakis.SvgConvert
 
@@ -69,7 +73,7 @@ This is happening because Microsoft only applied a quick and dirty patch to thei
 
 Your SVG file may be making use of fonts that happen to be unknown to GDI+, which is used by the popular "Svg" nuget package for rasterizing SVG, which is in turn used by MikeNakis.SvgConvert. If this happens, then any text you have in your SVG file will not transfer as intended to the ICO file.
 
-The easiest way to prevent this from happening is to make use of the "convert text to path" command of your SVG editor, so that your SVG file contains no text elements.
+One way to prevent this from happening is to make use of the "convert text to path" command of your SVG editor, so that your SVG file contains no text elements.
 
 ## License
 
@@ -82,6 +86,12 @@ More information: see [LICENSE.md](LICENSE.md)
 This project uses _**my very own™**_ coding style.
 
 More information: see [michael.gr - On Coding Style](https://blog.michael.gr/2018/04/on-coding-style.html)
+
+## TO DO
+
+- Make it cross-platform:
+  - Find a cross-platform way to produce PNG files
+  - Find a cross-platform way to produce png-based-ICO files.
 
 ---------------
 
