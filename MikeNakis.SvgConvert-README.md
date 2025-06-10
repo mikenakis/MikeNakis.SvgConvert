@@ -6,12 +6,20 @@
 
 [![Build](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/github-workflow.yml/badge.svg)](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/github-workflow.yml)
 
-MikeNakis.SvgConvert is a command-line tool which can be used to convert an SVG file to other file formats.  Supported formats:
+MikeNakis.SvgConvert is a cross-platform command-line tool that can be used to convert an SVG file to other file formats.  Supported formats:
 
 - PNG
 - ICO (PNG-based Windows Icon)
 
 The generated windows-icon file has multiple resolutions, transparent background, and is PNG-based, (a feature supported by Windows since Vista,) so it can have semi-transparent pixels instead of being limited to pixels that are either fully transparent or fully opaque. In other words, the generated icon looks _perfect_.
+
+## How it works
+
+MikeNakis.SvgConvert makes use of [GitHub: mono/SkiaSharp](https://github.com/mono/SkiaSharp) for saving in-memory images to PNG,
+and [GitHub: wieslawsoltes/Svg.Skia](https://github.com/wieslawsoltes/Svg.Skia) for loading SVG files and rendering them into in-memory images.
+MikeNakis.SvgConvert implements the logic for creating a multi-image ICO file from a series of PNG images based on information found in [Wikipedia: ICO (file_format)](https://en.wikipedia.org/wiki/ICO_(file_format)).
+
+MikeNakis.SvgConvert _**does not**_ use the [GitHub - svg-net/SVG](https://github.com/svg-net/SVG) library anymore, because it is windows-only.
 
 ## Purpose
 
@@ -24,10 +32,6 @@ The main purpose of MikeNakis.SvgConvert is to allow us to create the icon of ou
 1. SVG files are text files, so each time we modify them our source control system can show us precisely what changes we made.
 1. By incorporating SvgConvert in our build process, the conversion from SVG to ICO takes place only if the SVG file has changed.
 1. Each time the SVG file changes, the corresponding ICO file is automatically generated without the need for manual steps.
-
-## Limitations
-
-Currently, this tool only works on Windows.
 
 ## How to use MikeNakis.SvgConvert
 
