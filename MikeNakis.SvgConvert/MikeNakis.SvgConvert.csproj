@@ -49,7 +49,7 @@
 		</When>
 		<Otherwise>
 			<ItemGroup>
-				<PackageReference Include="MikeNakis.Kit-$(PackagesConfiguration)" Version="2.*" PrivateAssests="All" />
+				<PackageReference Include="MikeNakis.Kit-$(PackagesConfiguration)" Version="5.*" PrivateAssests="All" />
 			</ItemGroup>
 		</Otherwise>
 	</Choose>
@@ -68,7 +68,7 @@
 		</When>
 		<Otherwise>
 			<ItemGroup>
-				<PackageReference Include="MikeNakis.Console-$(PackagesConfiguration)" Version="2.*" PrivateAssests="All" />
+				<PackageReference Include="MikeNakis.Console-$(PackagesConfiguration)" Version="5.*" PrivateAssests="All" />
 			</ItemGroup>
 		</Otherwise>
 	</Choose>
@@ -83,7 +83,7 @@
 		</When>
 		<Otherwise>
 			<ItemGroup>
-				<PackageReference Include="MikeNakis.Clio-$(PackagesConfiguration)" Version="2.*" PrivateAssests="All" />
+				<PackageReference Include="MikeNakis.Clio-$(PackagesConfiguration)" Version="5.*" PrivateAssests="All" />
 			</ItemGroup>
 		</Otherwise>
 	</Choose>
