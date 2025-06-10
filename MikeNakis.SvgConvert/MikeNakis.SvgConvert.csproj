@@ -5,11 +5,11 @@
 			and they enforce this by disallowing the 'windows' target-framework-moniker (TFM) when packing.
 			So, we have no option but to refrain from using this TFM when packing. -->
 		<TargetFramework Condition="'$(_IsPacking)'=='True'">net9.0</TargetFramework>
-		<TargetFramework Condition="'$(_IsPacking)'!='True'">net9.0-windows</TargetFramework>
+		<TargetFramework Condition="'$(_IsPacking)'!='True'">net9.0</TargetFramework>
 		<!-- PEARL-ON-PEARL: Of course, omitting the -windows TFM causes several instances of warning CA1416 "This call
 			site is reachable on all platforms" to be issued. So, we have no option but to suppress this warning, and
 			let users know that this tool will only work on windows. -->
-		<NoWarn>$(NoWarn);CA1416</NoWarn>
+		<NoWarn Condition="'$(_IsPacking)'=='True'">$(NoWarn);CA1416</NoWarn>
 
 		<Configurations>Debug;Release</Configurations>
 		<OutputType>Exe</OutputType>
