@@ -7,7 +7,9 @@
 [![Build](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/SvgConvert-build-and-test-on-push.yml/badge.svg)](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/SvgConvert-build-and-test-on-push.yml)
 [![Build](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/SvgConvert-publish-to-nuget-org.yml/badge.svg)](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/SvgConvert-publish-to-nuget-org.yml)
 
-MikeNakis.SvgConvert is a cross-platform command-line tool that can be used to convert an SVG file to other file formats.  Supported formats:
+MikeNakis.SvgConvert is a (cross-platform, command-line) dotnet tool that can be used to convert SVG files to other file formats.
+
+Supported formats:
 
 - PNG
 - ICO (PNG-based Windows Icon)
@@ -16,8 +18,7 @@ The generated windows-icon file has multiple resolutions, transparent background
 
 ## How it works
 
-MikeNakis.SvgConvert makes use of [GitHub: mono/SkiaSharp](https://github.com/mono/SkiaSharp) for saving in-memory images to PNG,
-and [GitHub: wieslawsoltes/Svg.Skia](https://github.com/wieslawsoltes/Svg.Skia) for loading SVG files and rendering them into in-memory images.
+MikeNakis.SvgConvert makes use of **wieslawsoltes/Svg.Skia** ([GitHub](https://github.com/wieslawsoltes/Svg.Skia), [NuGet](https://www.nuget.org/packages/Svg.Skia/)) for loading SVG files and rendering them into in-memory images, and **SkiaSharp** ([GitHub](https://github.com/mono/SkiaSharp), [NuGet](https://www.nuget.org/packages/SkiaSharp)) for saving in-memory images to PNG.
 MikeNakis.SvgConvert implements the logic for creating a multi-image ICO file from a series of PNG images based on information found in [Wikipedia: ICO (file_format)](https://en.wikipedia.org/wiki/ICO_(file_format)).
 
 MikeNakis.SvgConvert _**does not**_ use the [GitHub - svg-net/SVG](https://github.com/svg-net/SVG) library anymore, because it is windows-only.
@@ -76,7 +77,7 @@ This is happening because Microsoft only applied a quick and dirty patch to thei
 
 ## Important notice about fonts
 
-Your SVG file may be making use of fonts that happen to be unknown to GDI+, which is used by the popular "Svg" nuget package for rasterizing SVG, which is in turn used by MikeNakis.SvgConvert. If this happens, then any text you have in your SVG file will not transfer as intended to the ICO file.
+Your SVG file may be making use of fonts that are unknown to Mikenakis.SvgConvert. If this happens, then text in your SVG file will not transfer as intended to the ICO file.
 
 One way to prevent this from happening is to make use of the "convert text to path" command of your SVG editor, so that your SVG file contains no text elements.
 
@@ -94,9 +95,10 @@ More information: see [michael.gr - On Coding Style](https://blog.michael.gr/201
 
 ## TO DO
 
-- Make it cross-platform:
-  - Find a cross-platform way to produce PNG files
-  - Find a cross-platform way to produce png-based-ICO files.
+- Give a better example of how to use, involving `dotnet tool install`
+- Research other ways of making it work
+  - Namely, CoreCompat.System.Drawing or ImageSharp 
+  - See https://devblogs.microsoft.com/dotnet/net-core-image-processing/
 
 ---------------
 
