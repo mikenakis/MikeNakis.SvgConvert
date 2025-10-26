@@ -28,7 +28,7 @@ sealed class Svg2IcoMain
 			Clio.IPositionalArgument<string?> outputFileArgument = argumentParser.AddStringPositional( "output-file", "The PNG file to write" );
 			if( !argumentParser.TryParse() )
 				return;
-			FilePath inputFilePath = FilePath.FromRelativeOrAbsolutePath( inputFileArgument.Value );
+			FilePath inputFilePath = FilePath.FromRelativeOrAbsolutePath( inputFileArgument.Value, DotNetHelpers.GetWorkingDirectoryPath() );
 			FilePath outputFilePath = getRelatedFilePath( inputFilePath, outputFileArgument.Value, ".png" );
 			int? width = widthArgument.Value == null ? null : parseInt( widthArgument.Value );
 			int? height = heightArgument.Value == null ? null : parseInt( heightArgument.Value );
@@ -42,7 +42,7 @@ sealed class Svg2IcoMain
 			if( !argumentParser.TryParse() )
 				return;
 			IReadOnlyList<int> iconSizes = iconSizesArgument.Value.Split( ',' ).Select( int.Parse ).Collect();
-			FilePath inputFilePath = FilePath.FromRelativeOrAbsolutePath( inputFileArgument.Value );
+			FilePath inputFilePath = FilePath.FromRelativeOrAbsolutePath( inputFileArgument.Value, DotNetHelpers.GetWorkingDirectoryPath() );
 			FilePath outputFilePath = getRelatedFilePath( inputFilePath, outputFileArgument.Value, ".ico" );
 			convertToWindowsIco( inputFilePath, outputFilePath, iconSizes );
 		} );
@@ -60,7 +60,7 @@ sealed class Svg2IcoMain
 		Log.Debug( $"Reading {inputFilePath}" );
 		using( var svg = new Svg.SKSvg() )
 		{
-			using( SysIo.FileStream stream = inputFilePath.NewStream( SysIo.FileMode.Open, SysIo.FileAccess.Read ) )
+			using( SysIo.FileStream stream = inputFilePath.OpenBinaryForReading() )
 				if( svg.Load( stream ) == null )
 					throw new GenericException( "Svg.Skia sucks" );
 			Sk.SKPicture svgPicture = svg.Picture ?? throw new GenericException( "Svg.Skia sucks" );
@@ -68,7 +68,7 @@ sealed class Svg2IcoMain
 			int height = maybeHeight ?? (int)svgPicture.CullRect.Height;
 			generatePngData( svgPicture, width, height, data =>
 			{
-				using( SysIo.FileStream stream = outputFilePath.NewStream( SysIo.FileMode.OpenOrCreate, SysIo.FileAccess.Write ) )
+				using( SysIo.FileStream stream = outputFilePath.CreateBinary() )
 					data.SaveTo( stream );
 			} );
 		}
@@ -84,7 +84,7 @@ sealed class Svg2IcoMain
 		using( var svg = new Svg.SKSvg() )
 		{
 			Log.Debug( $"Reading {inputFilePath}" );
-			using( SysIo.FileStream stream = inputFilePath.NewStream( SysIo.FileMode.Open, SysIo.FileAccess.Read ) )
+			using( SysIo.FileStream stream = inputFilePath.OpenBinaryForReading() )
 				if( svg.Load( stream ) == null )
 					throw new GenericException( "Svg.Skia sucks" );
 			Sk.SKPicture svgPicture = svg.Picture ?? throw new GenericException( "Svg.Skia sucks" );
@@ -103,7 +103,7 @@ sealed class Svg2IcoMain
 			}
 
 			Log.Debug( $"Writing {outputFilePath}" );
-			using( SysIo.FileStream stream = outputFilePath.NewStream( SysIo.FileMode.Create, SysIo.FileAccess.Write ) )
+			using( SysIo.FileStream stream = outputFilePath.CreateBinary() )
 			{
 				// See https://en.wikipedia.org/wiki/ICO_(file_format)
 				const int iconDirStructureSize = 6;
@@ -161,10 +161,10 @@ sealed class Svg2IcoMain
 		Assert( extension.StartsWith2( "." ) );
 		if( targetFileName == null )
 			return sourceFilePath.WithReplacedExtension( extension );
-		DirectoryPath targetDirectoryPath = DirectoryPath.FromAbsoluteOrRelativePath( targetFileName );
+		DirectoryPath targetDirectoryPath = DirectoryPath.FromAbsoluteOrRelativePath( targetFileName, DotNetHelpers.GetWorkingDirectoryPath() );
 		if( targetFileName.EndsWith( '/' ) || targetFileName.EndsWith( '\\' ) || targetDirectoryPath.Exists() )
-			return FilePath.Of( targetDirectoryPath, sourceFilePath.GetFileNameWithoutExtension() + extension );
-		return FilePath.FromRelativeOrAbsolutePath( targetFileName );
+			return targetDirectoryPath.File( sourceFilePath.GetFileNameWithoutExtension() + extension );
+		return FilePath.FromRelativeOrAbsolutePath( targetFileName, DotNetHelpers.GetWorkingDirectoryPath() );
 	}
 
 	static int parseInt( string s )
