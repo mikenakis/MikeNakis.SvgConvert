@@ -1,5 +1,7 @@
 namespace MikeNakis.SvgConvert;
 
+using System.Collections.Generic;
+using System.Linq;
 using MikeNakis.Clio.Extensions;
 using MikeNakis.Console;
 using MikeNakis.Kit;
@@ -8,6 +10,9 @@ using MikeNakis.Kit.Extensions;
 using MikeNakis.Kit.FileSystem;
 using Sk = SkiaSharp;
 using Svg = Svg.Skia;
+using Sys = System;
+using SysGlob = System.Globalization;
+using SysIo = System.IO;
 
 sealed class Svg2IcoMain
 {
