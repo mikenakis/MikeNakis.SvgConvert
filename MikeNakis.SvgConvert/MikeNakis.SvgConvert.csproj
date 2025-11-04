@@ -99,7 +99,6 @@
 	<ItemGroup>
 		<None Include="..\LICENSE.md" Pack="True" PackagePath="/" />
 		<None Include="..\MikeNakis.SvgConvert-Logo.png" Pack="True" PackagePath="/" />
-		<None Include="SvgConvert.ico.svg" Pack="True" PackagePath="/" />
 		<None Include="README-for-nuget.md" Pack="True" PackagePath="/README.md" />
 	</ItemGroup>
 
