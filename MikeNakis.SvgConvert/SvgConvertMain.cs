@@ -8,6 +8,7 @@ using MikeNakis.Kit;
 using MikeNakis.Kit.Collections;
 using MikeNakis.Kit.Extensions;
 using MikeNakis.Kit.FileSystem;
+using static MikeNakis.Kit.GlobalStatics;
 using Sk = SkiaSharp;
 using Svg = Svg.Skia;
 using Sys = System;

@@ -54,10 +54,6 @@
 		</Otherwise>
 	</Choose>
 
-	<ItemGroup>
-		<Using Static="True" Include="MikeNakis.Kit.GlobalStatics" />
-	</ItemGroup>
-
 	<!-- PEARL: Dotnet does not support swapping between package and project dependencies. The following nonsense is
 	            necessary to work around this limitation. See https://github.com/dotnet/project-system/issues/195 -->
 	<Choose>
