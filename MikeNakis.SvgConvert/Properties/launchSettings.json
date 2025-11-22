@@ -2,7 +2,8 @@
   "profiles": {
     "main": {
       "commandName": "Project",
-      "commandLineArgs": "windows-ico ..\\..\\Solution\\WowsIntel\\WowsIntel.ico.svg ..\\..\\Solution\\WowsIntel\\obj\\WowsIntel.ico --sizes=16,32,48,256"
+      "commandLineArgs": "png ..\\..\\MikeNakis.Testing\\MikeNakis.Testing-logo.svg --height=100",
+      "workingDirectory": "$(MSBuildProjectDirectory)"
     }
   }
 }

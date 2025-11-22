@@ -15,6 +15,9 @@ using Sys = System;
 using SysGlob = System.Globalization;
 using SysIo = System.IO;
 
+// One command-line to try debugging:
+// windows-ico ..\..\Solution\WowsIntel\WowsIntel.ico.svg ..\..\Solution\WowsIntel\obj\WowsIntel.ico --sizes=16,32,48,256
+
 sealed class Svg2IcoMain
 {
 	static void Main( string[] arguments )
@@ -57,6 +60,51 @@ sealed class Svg2IcoMain
 		return 0;
 	}
 
+	static Svg.SKSvg loadSvg( FilePath inputFilePath )
+	{
+		var svg = new Svg.SKSvg();
+		try
+		{
+			using( SysIo.FileStream stream = inputFilePath.OpenBinaryForReading() )
+				if( svg.Load( stream ) == null )
+					throw new GenericException( "Svg.Skia sucks" );
+		}
+		catch( Sys.Exception )
+		{
+			svg.Dispose();
+			throw;
+		}
+		return svg;
+	}
+
+	static (int width, int height) getWidthAndHeight( Sk.SKPicture svgPicture, int? maybeWidth, int? maybeHeight )
+	{
+		//int width = maybeWidth ?? (int)svgPicture.CullRect.Width;
+		//int height = maybeHeight ?? (int)svgPicture.CullRect.Height;
+		int width = (int)svgPicture.CullRect.Width;
+		int height = (int)svgPicture.CullRect.Height;
+		double aspectRatio = (double)width / height;
+		if( maybeWidth.HasValue && maybeHeight.HasValue )
+		{
+			double requestedAspectRatio = maybeWidth.Value / maybeHeight.Value;
+			if( !DoubleEquals( aspectRatio, requestedAspectRatio ) )
+				throw new GenericException( $"SVG aspect ratio is {aspectRatio}, requested width {maybeWidth.Value} and height {maybeHeight.Value} have a different aspect ratio." );
+			width = maybeWidth.Value;
+			height = maybeHeight.Value;
+		}
+		else if( maybeWidth.HasValue )
+		{
+			width = maybeWidth.Value;
+			height = (int)(width / aspectRatio);
+		}
+		else if( maybeHeight.HasValue )
+		{
+			height = maybeHeight.Value;
+			width = (int)(height * aspectRatio);
+		}
+		return (width, height);
+	}
+
 	static void convertToPng( FilePath inputFilePath, FilePath outputFilePath, int? maybeWidth, int? maybeHeight )
 	{
 		if( !inputFilePath.Extension.EqualsIgnoreCase( ".svg" ) )
@@ -64,14 +112,10 @@ sealed class Svg2IcoMain
 		if( !outputFilePath.Extension.EqualsIgnoreCase( ".png" ) )
 			throw new GenericException( "output filename does not have an .png extension" );
 		Log.Debug( $"Reading {inputFilePath}" );
-		using( var svg = new Svg.SKSvg() )
+		using( Svg.SKSvg svg = loadSvg( inputFilePath ) )
 		{
-			using( SysIo.FileStream stream = inputFilePath.OpenBinaryForReading() )
-				if( svg.Load( stream ) == null )
-					throw new GenericException( "Svg.Skia sucks" );
 			Sk.SKPicture svgPicture = svg.Picture ?? throw new GenericException( "Svg.Skia sucks" );
-			int width = maybeWidth ?? (int)svgPicture.CullRect.Width;
-			int height = maybeHeight ?? (int)svgPicture.CullRect.Height;
+			(int width, int height) = getWidthAndHeight( svgPicture, maybeWidth, maybeHeight );
 			generatePngData( svgPicture, width, height, data =>
 			{
 				using( SysIo.FileStream stream = outputFilePath.CreateBinary() )
@@ -87,14 +131,11 @@ sealed class Svg2IcoMain
 			throw new GenericException( "input filename does not have an .svg extension" );
 		if( !outputFilePath.Extension.EqualsIgnoreCase( ".ico" ) )
 			throw new GenericException( "output filename does not have an .ico extension" );
-		using( var svg = new Svg.SKSvg() )
+		using( Svg.SKSvg svg = loadSvg( inputFilePath ) )
 		{
-			Log.Debug( $"Reading {inputFilePath}" );
-			using( SysIo.FileStream stream = inputFilePath.OpenBinaryForReading() )
-				if( svg.Load( stream ) == null )
-					throw new GenericException( "Svg.Skia sucks" );
 			Sk.SKPicture svgPicture = svg.Picture ?? throw new GenericException( "Svg.Skia sucks" );
-
+			if( (int)svgPicture.CullRect.Width != (int)svgPicture.CullRect.Height )
+				throw new GenericException( "SVG image is not rectangular." );
 			byte[][] imageDataArrays = new byte[iconSizes.Count][];
 			for( int i = 0; i < iconSizes.Count; i++ )
 			{
