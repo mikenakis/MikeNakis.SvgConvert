@@ -79,8 +79,6 @@ sealed class Svg2IcoMain
 
 	static (int width, int height) getWidthAndHeight( Sk.SKPicture svgPicture, int? maybeWidth, int? maybeHeight )
 	{
-		//int width = maybeWidth ?? (int)svgPicture.CullRect.Width;
-		//int height = maybeHeight ?? (int)svgPicture.CullRect.Height;
 		int width = (int)svgPicture.CullRect.Width;
 		int height = (int)svgPicture.CullRect.Height;
 		double aspectRatio = (double)width / height;

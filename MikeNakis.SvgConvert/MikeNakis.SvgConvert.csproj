@@ -93,9 +93,11 @@
 	</Target>
 
 	<ItemGroup>
-		<None Include="..\LICENSE.md" Pack="True" PackagePath="/" />
-		<None Include="..\MikeNakis.SvgConvert-Logo.png" Pack="True" PackagePath="/" />
-		<None Include="README-for-nuget.md" Pack="True" PackagePath="/README.md" />
+		<!-- PEARL: Visual Studio will show these items in "Solution Explorer", as if they are in the project directory,
+		    even though they are NOT. The "Visuble=false" magical incantation is necessary to prevent this. -->
+		<None Include="..\LICENSE.md" Pack="True" PackagePath="/" Visible="False" />
+		<None Include="..\MikeNakis.SvgConvert-Logo.png" Pack="True" PackagePath="/" Visible="False" />
+		<None Include="..\README-for-nuget.md" Pack="True" PackagePath="/README.md" Visible="False" />
 	</ItemGroup>
 
 </Project>
