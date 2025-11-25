@@ -62,5 +62,5 @@ if [ "${RunTests}" = "Yes" ]; then
 echo ""
 echo "TEST ===================================================================="
 echo ""
-dotnet test       -TerminalLogger:off -check --configuration ${Configuration} --no-build --verbosity normal
+dotnet test       -TerminalLogger:off -check --configuration ${Configuration} --no-build --verbosity minimal
 fi
