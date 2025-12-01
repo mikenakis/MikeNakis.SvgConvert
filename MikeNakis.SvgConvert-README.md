@@ -4,8 +4,7 @@
   <img title="MikeNakis.SvgConvert icon" src="MikeNakis.SvgConvert/SvgConvert.ico.svg" width="256" />
 </p>
 
-[![Build](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/SvgConvert-build-and-test-on-push.yml/badge.svg)](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/SvgConvert-build-and-test-on-push.yml)
-[![Build](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/SvgConvert-publish-to-nuget-org.yml/badge.svg)](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/SvgConvert-publish-to-nuget-org.yml)
+[![Build](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/mikenakis/MikeNakis.SvgConvert/actions/workflows/SvgConvert-build-and-test-on-push.yml)
 
 MikeNakis.SvgConvert is a cross-platform command-line utility (packaged as a dotnet tool) that can be used to convert SVG files to other file formats.
 
