@@ -42,9 +42,9 @@
 	<!-- PEARL: Dotnet does not support swapping between package and project dependencies. The following nonsense is
 	            necessary to work around this limitation. See https://github.com/dotnet/project-system/issues/195 -->
 	<Choose>
-		<When Condition="Exists('..\..\MikeNakis.Kit\MikeNakis.Kit\MikeNakis.Kit.csproj')">
+		<When Condition="Exists('$(MSBuildProjectDirectory)\..\..\MikeNakis.Kit\MikeNakis.Kit\MikeNakis.Kit.csproj')">
 			<ItemGroup>
-				<ProjectReference Include="..\..\MikeNakis.Kit\MikeNakis.Kit\MikeNakis.Kit.csproj" />
+				<ProjectReference Include="$(MSBuildProjectDirectory)\..\..\MikeNakis.Kit\MikeNakis.Kit\MikeNakis.Kit.csproj" />
 			</ItemGroup>
 		</When>
 		<Otherwise>
@@ -57,9 +57,9 @@
 	<!-- PEARL: Dotnet does not support swapping between package and project dependencies. The following nonsense is
 	            necessary to work around this limitation. See https://github.com/dotnet/project-system/issues/195 -->
 	<Choose>
-		<When Condition="Exists('..\..\MikeNakis.Console\MikeNakis.Console\MikeNakis.Console.csproj')">
+		<When Condition="Exists('$(MSBuildProjectDirectory)\..\..\MikeNakis.Console\MikeNakis.Console\MikeNakis.Console.csproj')">
 			<ItemGroup>
-				<ProjectReference Include="..\..\MikeNakis.Console\MikeNakis.Console\MikeNakis.Console.csproj" />
+				<ProjectReference Include="$(MSBuildProjectDirectory)\..\..\MikeNakis.Console\MikeNakis.Console\MikeNakis.Console.csproj" />
 			</ItemGroup>
 		</When>
 		<Otherwise>
@@ -72,9 +72,9 @@
 	<!-- PEARL: Dotnet does not support swapping between package and project dependencies. The following nonsense is
 	            necessary to work around this limitation. See https://github.com/dotnet/project-system/issues/195 -->
 	<Choose>
-		<When Condition="Exists('..\..\MikeNakis.Clio\MikeNakis.Clio\MikeNakis.Clio.csproj')">
+		<When Condition="Exists('$(MSBuildProjectDirectory)\..\..\MikeNakis.Clio\MikeNakis.Clio\MikeNakis.Clio.csproj')">
 			<ItemGroup>
-				<ProjectReference Include="..\..\MikeNakis.Clio\MikeNakis.Clio\MikeNakis.Clio.csproj" />
+				<ProjectReference Include="$(MSBuildProjectDirectory)\..\..\MikeNakis.Clio\MikeNakis.Clio\MikeNakis.Clio.csproj" />
 			</ItemGroup>
 		</When>
 		<Otherwise>
