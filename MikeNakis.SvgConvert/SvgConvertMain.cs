@@ -85,7 +85,7 @@ sealed class Svg2IcoMain
 		if( maybeWidth.HasValue && maybeHeight.HasValue )
 		{
 			double requestedAspectRatio = maybeWidth.Value / maybeHeight.Value;
-			if( !NearlyEquals( aspectRatio, requestedAspectRatio ) )
+			if( !aspectRatio.NearlyEquals( requestedAspectRatio ) )
 				throw new GenericException( $"SVG aspect ratio is {aspectRatio}, requested width {maybeWidth.Value} and height {maybeHeight.Value} have a different aspect ratio." );
 			width = maybeWidth.Value;
 			height = maybeHeight.Value;
