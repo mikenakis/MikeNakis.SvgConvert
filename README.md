@@ -90,7 +90,7 @@ More information: see [LICENSE.md](LICENSE.md)
 
 This project uses _**my very own™**_ coding style.
 
-More information: see [michael.gr - On Coding Style](https://blog.michael.gr/2018/04/on-coding-style.html)
+More information: see [michael.gr - On Coding Style](https://blog.michael.gr/post/2018-04-on-coding-style/)
 
 ## TO DO
 
