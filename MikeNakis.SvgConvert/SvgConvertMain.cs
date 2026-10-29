@@ -3,11 +3,6 @@ namespace MikeNakis.SvgConvert;
 using System.Collections.Generic;
 using System.Linq;
 using MikeNakis.Clio.Extensions;
-using MikeNakis.Console;
-using MikeNakis.Kit;
-using MikeNakis.Kit.Extensions;
-using MikeNakis.Kit.FileSystem;
-using static MikeNakis.Kit.GlobalStatics;
 using Sk = SkiaSharp;
 using Svg = Svg.Skia;
 using Sys = System;
@@ -19,10 +14,17 @@ using SysIo = System.IO;
 
 sealed class Svg2IcoMain
 {
-	static void Main( string[] arguments )
+	static int Main( string[] arguments )
 	{
-		StartupProjectDirectory.Initialize();
-		ConsoleHelpers.Run( false, () => run( arguments ) );
+		try
+		{
+			return run( arguments );
+		}
+		catch( Sys.Exception exception )
+		{
+			Sys.Console.Error.WriteLine( $"ERROR: {exception}" );
+			return -1;
+		}
 	}
 
 	static int run( string[] arguments )
@@ -36,8 +38,8 @@ sealed class Svg2IcoMain
 			Clio.IPositionalArgument<string?> outputFileArgument = argumentParser.AddStringPositional( "output-file", "The PNG file to write" );
 			if( !argumentParser.TryParse() )
 				return;
-			FilePath inputFilePath = FilePath.FromRelativeOrAbsolutePath( inputFileArgument.Value, DotNetHelpers.GetWorkingDirectoryPath() );
-			FilePath outputFilePath = getRelatedFilePath( inputFilePath, outputFileArgument.Value, ".png" );
+			string inputFilePath = SysIo.Path.GetFullPath( inputFileArgument.Value );
+			string outputFilePath = getRelatedFilePath( inputFilePath, outputFileArgument.Value, ".png" );
 			int? width = widthArgument.Value == null ? null : parseInt( widthArgument.Value );
 			int? height = heightArgument.Value == null ? null : parseInt( heightArgument.Value );
 			convertToPng( inputFilePath, outputFilePath, width, height );
@@ -49,9 +51,9 @@ sealed class Svg2IcoMain
 			Clio.IPositionalArgument<string?> outputFileArgument = argumentParser.AddStringPositional( "output-file", "The windows-ICO file to write" );
 			if( !argumentParser.TryParse() )
 				return;
-			IReadOnlyList<int> iconSizes = iconSizesArgument.Value.Split( ',' ).Select( int.Parse ).Collect();
-			FilePath inputFilePath = FilePath.FromRelativeOrAbsolutePath( inputFileArgument.Value, DotNetHelpers.GetWorkingDirectoryPath() );
-			FilePath outputFilePath = getRelatedFilePath( inputFilePath, outputFileArgument.Value, ".ico" );
+			IReadOnlyList<int> iconSizes = iconSizesArgument.Value.Split( ',' ).Select( int.Parse ).ToList();
+			string inputFilePath = SysIo.Path.GetFullPath( inputFileArgument.Value );
+			string outputFilePath = getRelatedFilePath( inputFilePath, outputFileArgument.Value, ".ico" );
 			convertToWindowsIco( inputFilePath, outputFilePath, iconSizes );
 		} );
 		if( !argumentParser.TryParse( arguments ) )
@@ -59,14 +61,14 @@ sealed class Svg2IcoMain
 		return 0;
 	}
 
-	static Svg.SKSvg loadSvg( FilePath inputFilePath )
+	static Svg.SKSvg loadSvg( string inputFilePath )
 	{
 		var svg = new Svg.SKSvg();
 		try
 		{
-			using( SysIo.FileStream stream = inputFilePath.OpenBinaryForReading() )
+			using( SysIo.FileStream stream = SysIo.File.OpenRead( inputFilePath ) )
 				if( svg.Load( stream ) == null )
-					throw new GenericException( "Svg.Skia sucks" );
+					throw new Sys.InvalidOperationException( "Svg.Skia sucks" );
 		}
 		catch( Sys.Exception )
 		{
@@ -76,6 +78,8 @@ sealed class Svg2IcoMain
 		return svg;
 	}
 
+	const double aspectRatioTolerance = 1e-15;
+
 	static (int width, int height) getWidthAndHeight( Sk.SKPicture svgPicture, int? maybeWidth, int? maybeHeight )
 	{
 		int width = (int)svgPicture.CullRect.Width;
@@ -83,9 +87,9 @@ sealed class Svg2IcoMain
 		double aspectRatio = (double)width / height;
 		if( maybeWidth.HasValue && maybeHeight.HasValue )
 		{
-			double requestedAspectRatio = maybeWidth.Value / maybeHeight.Value;
-			if( !aspectRatio.NearlyEquals( requestedAspectRatio ) )
-				throw new GenericException( $"SVG aspect ratio is {aspectRatio}, requested width {maybeWidth.Value} and height {maybeHeight.Value} have a different aspect ratio." );
+			double requestedAspectRatio = (double)maybeWidth.Value / maybeHeight.Value;
+			if( Sys.Math.Abs( aspectRatio - requestedAspectRatio ) >= aspectRatioTolerance )
+				throw new Sys.InvalidOperationException( $"SVG aspect ratio is {aspectRatio}, requested width {maybeWidth.Value} and height {maybeHeight.Value} have a different aspect ratio of {requestedAspectRatio}." );
 			width = maybeWidth.Value;
 			height = maybeHeight.Value;
 		}
@@ -102,37 +106,37 @@ sealed class Svg2IcoMain
 		return (width, height);
 	}
 
-	static void convertToPng( FilePath inputFilePath, FilePath outputFilePath, int? maybeWidth, int? maybeHeight )
+	static void convertToPng( string inputFilePath, string outputFilePath, int? maybeWidth, int? maybeHeight )
 	{
-		if( !inputFilePath.Extension.EqualsIgnoreCase( ".svg" ) )
-			throw new GenericException( "input filename does not have an .svg extension" );
-		if( !outputFilePath.Extension.EqualsIgnoreCase( ".png" ) )
-			throw new GenericException( "output filename does not have an .png extension" );
-		Log.Debug( $"Reading {inputFilePath}" );
+		if( !hasExtension( inputFilePath, ".svg" ) )
+			throw new Sys.InvalidOperationException( "input filename does not have an .svg extension" );
+		if( !hasExtension( outputFilePath, ".png" ) )
+			throw new Sys.InvalidOperationException( "output filename does not have an .png extension" );
+		Sys.Console.WriteLine( $"Reading {inputFilePath}" );
 		using( Svg.SKSvg svg = loadSvg( inputFilePath ) )
 		{
-			Sk.SKPicture svgPicture = svg.Picture ?? throw new GenericException( "Svg.Skia sucks" );
+			Sk.SKPicture svgPicture = svg.Picture ?? throw new Sys.InvalidOperationException( "Svg.Skia sucks" );
 			(int width, int height) = getWidthAndHeight( svgPicture, maybeWidth, maybeHeight );
 			generatePngData( svgPicture, width, height, data =>
 			{
-				using( SysIo.FileStream stream = outputFilePath.CreateBinary() )
+				using( SysIo.FileStream stream = SysIo.File.Create( outputFilePath ) )
 					data.SaveTo( stream );
 			} );
 		}
 		return;
 	}
 
-	static void convertToWindowsIco( FilePath inputFilePath, FilePath outputFilePath, IReadOnlyList<int> iconSizes )
+	static void convertToWindowsIco( string inputFilePath, string outputFilePath, IReadOnlyList<int> iconSizes )
 	{
-		if( !inputFilePath.Extension.EqualsIgnoreCase( ".svg" ) )
-			throw new GenericException( "input filename does not have an .svg extension" );
-		if( !outputFilePath.Extension.EqualsIgnoreCase( ".ico" ) )
-			throw new GenericException( "output filename does not have an .ico extension" );
+		if( !hasExtension( inputFilePath, ".svg" ) )
+			throw new Sys.InvalidOperationException( "input filename does not have an .svg extension" );
+		if( !hasExtension( outputFilePath, ".ico" ) )
+			throw new Sys.InvalidOperationException( "output filename does not have an .ico extension" );
 		using( Svg.SKSvg svg = loadSvg( inputFilePath ) )
 		{
-			Sk.SKPicture svgPicture = svg.Picture ?? throw new GenericException( "Svg.Skia sucks" );
+			Sk.SKPicture svgPicture = svg.Picture ?? throw new Sys.InvalidOperationException( "Svg.Skia sucks" );
 			if( (int)svgPicture.CullRect.Width != (int)svgPicture.CullRect.Height )
-				throw new GenericException( "SVG image is not rectangular." );
+				throw new Sys.InvalidOperationException( "SVG image is not rectangular." );
 			byte[][] imageDataArrays = new byte[iconSizes.Count][];
 			for( int i = 0; i < iconSizes.Count; i++ )
 			{
@@ -146,8 +150,8 @@ sealed class Svg2IcoMain
 				} );
 			}
 
-			Log.Debug( $"Writing {outputFilePath}" );
-			using( SysIo.FileStream stream = outputFilePath.CreateBinary() )
+			Sys.Console.WriteLine( $"Writing {outputFilePath}" );
+			using( SysIo.FileStream stream = SysIo.File.Create( outputFilePath ) )
 			{
 				// See https://en.wikipedia.org/wiki/ICO_(file_format)
 				const int iconDirStructureSize = 6;
@@ -156,14 +160,14 @@ sealed class Svg2IcoMain
 				writer.Write( (short)0 );   // 0 : reserved
 				writer.Write( (short)1 );   // 2 : 1=ico, 2=cur
 				writer.Write( (short)iconSizes.Count ); // 4 : number of images
-				Assert( stream.Length == iconDirStructureSize );
+				assert( stream.Length == iconDirStructureSize );
 				int imageDataOffset = iconDirStructureSize + iconSizes.Count * iconDirEntryStructureSize;
 				for( int i = 0; i < iconSizes.Count; i++ )
 				{
 					int width = iconSizes[i];
 					int height = iconSizes[i];
 					int imageDataLength = imageDataArrays[i].Length;
-					Assert( stream.Length == iconDirStructureSize + i * iconDirEntryStructureSize );
+					assert( stream.Length == iconDirStructureSize + i * iconDirEntryStructureSize );
 					writer.Write( (byte)(width >= 256 ? 0 : width) ); // 0 : width of image
 					writer.Write( (byte)(height >= 256 ? 0 : height) ); // 1 : height of image
 					writer.Write( (byte)0 ); // 2 : number of colors in palette
@@ -200,15 +204,26 @@ sealed class Svg2IcoMain
 		}
 	}
 
-	static FilePath getRelatedFilePath( FilePath sourceFilePath, string? targetFileName, string extension )
+	static string getRelatedFilePath( string sourceFilePath, string? targetFileName, string extension )
 	{
-		Assert( extension.StartsWith2( "." ) );
+		assert( extension.StartsWith( '.' ) );
 		if( targetFileName == null )
-			return sourceFilePath.WithReplacedExtension( extension );
-		DirectoryPath targetDirectoryPath = DirectoryPath.FromAbsoluteOrRelativePath( targetFileName, DotNetHelpers.GetWorkingDirectoryPath() );
-		if( targetFileName.EndsWith( '/' ) || targetFileName.EndsWith( '\\' ) || targetDirectoryPath.Exists() )
-			return targetDirectoryPath.File( sourceFilePath.GetFileNameWithoutExtension() + extension );
-		return FilePath.FromRelativeOrAbsolutePath( targetFileName, DotNetHelpers.GetWorkingDirectoryPath() );
+			return SysIo.Path.ChangeExtension( sourceFilePath, extension );
+		string targetPath = SysIo.Path.GetFullPath( targetFileName );
+		if( targetFileName.EndsWith( '/' ) || targetFileName.EndsWith( '\\' ) || SysIo.Directory.Exists( targetPath ) )
+			return SysIo.Path.Combine( targetPath, SysIo.Path.GetFileNameWithoutExtension( sourceFilePath ) + extension );
+		return targetPath;
+	}
+
+	static bool hasExtension( string filePath, string extension )
+	{
+		return string.Equals( SysIo.Path.GetExtension( filePath ), extension, Sys.StringComparison.OrdinalIgnoreCase );
+	}
+
+	static void assert( bool condition )
+	{
+		if( !condition )
+			throw new Sys.InvalidOperationException( "Assertion failed" );
 	}
 
 	static int parseInt( string s )

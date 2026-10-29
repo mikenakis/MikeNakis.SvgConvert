@@ -33,42 +33,11 @@
 	</PropertyGroup>
 
 	<Import Project="..\AllProjects.proj.xml" />
-	<Import Project="..\BannedApiAnalyzers.proj.xml" />
 
 	<ItemGroup>
 		<PackageReference Include="SkiaSharp" Version="3.119.0" />
 		<PackageReference Include="Svg.Skia" Version="3.0.3" />
 	</ItemGroup>
-
-	<!-- PEARL: Dotnet does not support swapping between package and project dependencies. The following nonsense is
-	            necessary to work around this limitation. See https://github.com/dotnet/project-system/issues/195 -->
-	<Choose>
-		<When Condition="Exists('$(MSBuildProjectDirectory)\..\..\MikeNakis.Kit\MikeNakis.Kit\MikeNakis.Kit.csproj')">
-			<ItemGroup>
-				<ProjectReference Include="$(MSBuildProjectDirectory)\..\..\MikeNakis.Kit\MikeNakis.Kit\MikeNakis.Kit.csproj" />
-			</ItemGroup>
-		</When>
-		<Otherwise>
-			<ItemGroup>
-				<PackageReference Include="MikeNakis.Kit-$(PackagesConfiguration)" Version="5.*" PrivateAssets="All" />
-			</ItemGroup>
-		</Otherwise>
-	</Choose>
-
-	<!-- PEARL: Dotnet does not support swapping between package and project dependencies. The following nonsense is
-	            necessary to work around this limitation. See https://github.com/dotnet/project-system/issues/195 -->
-	<Choose>
-		<When Condition="Exists('$(MSBuildProjectDirectory)\..\..\MikeNakis.Console\MikeNakis.Console\MikeNakis.Console.csproj')">
-			<ItemGroup>
-				<ProjectReference Include="$(MSBuildProjectDirectory)\..\..\MikeNakis.Console\MikeNakis.Console\MikeNakis.Console.csproj" />
-			</ItemGroup>
-		</When>
-		<Otherwise>
-			<ItemGroup>
-				<PackageReference Include="MikeNakis.Console-$(PackagesConfiguration)" Version="5.*" PrivateAssets="All" />
-			</ItemGroup>
-		</Otherwise>
-	</Choose>
 
 	<!-- PEARL: Dotnet does not support swapping between package and project dependencies. The following nonsense is
 	            necessary to work around this limitation. See https://github.com/dotnet/project-system/issues/195 -->
