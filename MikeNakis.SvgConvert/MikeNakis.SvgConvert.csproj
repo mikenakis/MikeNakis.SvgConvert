@@ -37,6 +37,10 @@
 	<ItemGroup>
 		<PackageReference Include="SkiaSharp" Version="3.119.0" />
 		<PackageReference Include="Svg.Skia" Version="3.0.3" />
+		<!-- [Claude] SkiaSharp and HarfBuzzSharp bring native libraries only for Windows and macOS, so the Linux ones are referenced explicitly; otherwise, the tool fails on Linux, where the CI build runs.
+		     [Claude] The "NoDependencies" variant of the Skia library does not need fontconfig to be installed. -->
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.0" />
+		<PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="8.3.0.1" />
 	</ItemGroup>
 
 	<!-- PEARL: Dotnet does not support swapping between package and project dependencies. The following nonsense is
