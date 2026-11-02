@@ -53,7 +53,8 @@
 		</When>
 		<Otherwise>
 			<ItemGroup>
-				<PackageReference Include="MikeNakis.Clio-$(PackagesConfiguration)" Version="6.3.0" PrivateAssets="All" />
+				<!-- [Claude] This reference must not have PrivateAssets="All", because packing a .NET tool leaves out the assemblies of such references, and the tool then fails to start. -->
+				<PackageReference Include="MikeNakis.Clio-$(PackagesConfiguration)" Version="6.3.0" />
 			</ItemGroup>
 		</Otherwise>
 	</Choose>
